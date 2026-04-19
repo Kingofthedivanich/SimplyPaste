@@ -1,7 +1,4 @@
-"""
-gui/main_window.py — главное окно приложения SimplyPaste.
-Построено на PyQt5 с современным тёмным дизайном для Windows 11.
-"""
+"""Главное окно приложения SimplyPaste."""
 
 import os
 import sys
@@ -23,9 +20,7 @@ from hotkey import HotkeyListener, HotkeyRecorder
 from typist import get_clipboard_text, _type_char
 
 
-# ══════════════════════════════════════════════════════════════════════════════
-#  Цветовая палитра (тёмная тема в стиле Windows 11)
-# ══════════════════════════════════════════════════════════════════════════════
+# Цветовая палитра
 
 COLORS = {
     "bg_dark":      "#1C1B1F",   # Основной фон (Surface)
@@ -199,9 +194,7 @@ def _section_label(text: str, parent=None) -> QLabel:
     return lbl
 
 
-# ══════════════════════════════════════════════════════════════════════════════
-#  Вспомогательный поток для операций с буфером (во избежание фризов GUI)
-# ══════════════════════════════════════════════════════════════════════════════
+
 
 class HotkeySignalBridge(QObject):
     """
@@ -242,9 +235,7 @@ class PasteWorker(QThread):
         self.finished_typing.emit()
 
 
-# ══════════════════════════════════════════════════════════════════════════════
-#  Главное окно
-# ══════════════════════════════════════════════════════════════════════════════
+
 
 class MainWindow(QMainWindow):
     """
@@ -628,7 +619,6 @@ class MainWindow(QMainWindow):
         self.activateWindow()
 
     def closeEvent(self, event):
-        """При закрытии окна — сворачиваем в трей вместо выхода."""
         event.ignore()
         self.hide()
         self._tray.showMessage(
@@ -639,7 +629,6 @@ class MainWindow(QMainWindow):
         )
 
     def _quit_app(self):
-        """Полное завершение приложения."""
         self._listener.stop()
         save_config(self._config)
         self._tray.hide()
