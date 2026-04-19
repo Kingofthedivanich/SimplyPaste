@@ -28,20 +28,19 @@ from typist import get_clipboard_text, _type_char
 # ══════════════════════════════════════════════════════════════════════════════
 
 COLORS = {
-    "bg_dark":      "#0F0F17",   # Основной фон
-    "bg_card":      "#1A1A2E",   # Карточки
-    "bg_widget":    "#16213E",   # Виджеты
-    "accent":       "#7C3AED",   # Фиолетовый акцент
-    "accent_light": "#A855F7",   # Акцент светлый (hover)
-    "accent_glow":  "#4C1D95",   # Тень акцента
-    "success":      "#10B981",   # Зелёный — работает
-    "warning":      "#F59E0B",   # Жёлтый — запись клавиши
-    "danger":       "#EF4444",   # Красный — выключено
-    "text_primary": "#F1F5F9",   # Основной текст
-    "text_secondary": "#94A3B8", # Вторичный текст
-    "border":       "#2D2D4E",   # Граница
-    "slider_groove": "#2D2D4E",  # Дорожка ползунка
-    "slider_handle": "#7C3AED",  # Ручка ползунка
+    "bg_dark":      "#1C1B1F",   # Основной фон (Surface)
+    "bg_card":      "#2B2930",   # Карточки (Surface Variant / Container)
+    "bg_widget":    "#322F35",   # Виджеты внутри карточек (Surface Container High)
+    "accent":       "#D0BCFF",   # Primary (светлый фиолетовый)
+    "accent_light": "#EADDFF",   # Primary Container (светлее)
+    "accent_glow":  "#4F378B",   # Primary (тёмный, для теней или hover)
+    "success":      "#A8EFCD",   # Аналог Primary для успеха (зеленоватый пастельный)
+    "warning":      "#FFB4AB",   # Запись клавиши (error container или tertiary)
+    "danger":       "#FFB4AB",   # Отключено (красный пастельный error)
+    "text_primary": "#E6E1E5",   # On-Surface (основной текст)
+    "text_secondary": "#CAC4D0", # On-Surface Variant (вторичный текст)
+    "border":       "#49454F",   # Outline (границы)
+    "on_accent":    "#381E72",   # On-Primary (текст на кнопках)
 }
 
 STYLESHEET = f"""
@@ -49,15 +48,15 @@ STYLESHEET = f"""
 QMainWindow, QWidget#centralWidget {{
     background-color: {COLORS['bg_dark']};
     color: {COLORS['text_primary']};
-    font-family: 'Segoe UI', 'Inter', sans-serif;
+    font-family: 'Segoe UI Variable Display', 'Segoe UI', sans-serif;
 }}
 
 /* ── Карточки ── */
 QFrame#card {{
     background-color: {COLORS['bg_card']};
-    border: 1px solid {COLORS['border']};
-    border-radius: 12px;
-    padding: 4px;
+    border: none;
+    border-radius: 24px;
+    padding: 8px;
 }}
 
 /* ── Метки ── */
@@ -66,140 +65,102 @@ QLabel {{
     background: transparent;
 }}
 QLabel#sectionTitle {{
-    color: {COLORS['text_secondary']};
-    font-size: 10px;
+    color: {COLORS['accent']};
+    font-size: 11px;
     font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }}
 QLabel#hotkeyDisplay {{
     background-color: {COLORS['bg_widget']};
-    border: 2px solid {COLORS['accent']};
-    border-radius: 8px;
-    color: {COLORS['accent_light']};
+    border: none;
+    border-radius: 12px;
+    color: {COLORS['accent']};
     font-size: 16px;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     padding: 8px 18px;
     qproperty-alignment: AlignCenter;
 }}
 QLabel#statusLabel {{
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 500;
-    padding: 4px 10px;
-    border-radius: 5px;
+    padding: 6px 12px;
+    border-radius: 8px;
 }}
 
 /* ── Кнопки ── */
 QPushButton {{
-    background-color: {COLORS['bg_widget']};
-    color: {COLORS['text_primary']};
-    border: 1px solid {COLORS['border']};
-    border-radius: 8px;
+    background-color: {COLORS['accent']};
+    color: {COLORS['on_accent']};
+    border: none;
+    border-radius: 18px; /* Material pill shape for small buttons */
     font-size: 13px;
-    font-weight: 500;
-    padding: 8px 18px;
+    font-weight: 600;
+    padding: 8px 20px;
     outline: none;
 }}
 QPushButton:hover {{
-    background-color: {COLORS['accent_glow']};
-    border-color: {COLORS['accent']};
-    color: {COLORS['accent_light']};
+    background-color: {COLORS['accent_light']};
 }}
 QPushButton:pressed {{
-    background-color: {COLORS['accent']};
+    background-color: {COLORS['accent_glow']};
+    color: {COLORS['text_primary']};
 }}
 
 /* Кнопка «Записать клавишу» */
 QPushButton#recordBtn {{
     background-color: {COLORS['bg_widget']};
-    border: 1px solid {COLORS['border']};
-    font-size: 12px;
-    padding: 8px 14px;
+    color: {COLORS['text_primary']};
+    border-radius: 16px;
+    font-weight: 500;
+}}
+QPushButton#recordBtn:hover {{
+    background-color: {COLORS['border']};
 }}
 QPushButton#recordBtn[recording="true"] {{
     background-color: {COLORS['warning']};
-    border-color: {COLORS['warning']};
-    color: #000;
+    color: #410002;
 }}
 
 /* Кнопка включения/выключения */
 QPushButton#toggleBtn {{
-    font-size: 14px;
-    font-weight: 700;
-    padding: 12px 28px;
-    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 14px 28px;
+    border-radius: 24px; /* Material 3 large button */
     letter-spacing: 0.5px;
 }}
 QPushButton#toggleBtn[enabled_state="true"] {{
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-        stop:0 {COLORS['accent']}, stop:1 {COLORS['accent_light']});
-    border: none;
-    color: white;
+    background-color: {COLORS['accent']};
+    color: {COLORS['on_accent']};
 }}
 QPushButton#toggleBtn[enabled_state="false"] {{
-    background-color: {COLORS['bg_widget']};
-    border: 2px solid {COLORS['danger']};
-    color: {COLORS['danger']};
+    background-color: {COLORS['danger']};
+    color: #410002;
 }}
 QPushButton#toggleBtn:hover {{
     opacity: 0.9;
 }}
 
-/* ── Ползунок ── */
-QSlider::groove:horizontal {{
-    height: 6px;
-    background: {COLORS['slider_groove']};
-    border-radius: 3px;
-}}
-QSlider::handle:horizontal {{
-    background: {COLORS['slider_handle']};
-    border: 2px solid {COLORS['accent_light']};
-    width: 18px;
-    height: 18px;
-    margin: -6px 0;
-    border-radius: 9px;
-}}
-QSlider::handle:horizontal:hover {{
-    background: {COLORS['accent_light']};
-}}
-QSlider::sub-page:horizontal {{
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-        stop:0 {COLORS['accent']}, stop:1 {COLORS['accent_light']});
-    border-radius: 3px;
-}}
-
-/* ── SpinBox ── */
+/* ── SpinBox (Material 3 style text field) ── */
 QSpinBox {{
     background-color: {COLORS['bg_widget']};
     color: {COLORS['text_primary']};
-    border: 1px solid {COLORS['border']};
-    border-radius: 6px;
-    font-size: 13px;
-    padding: 4px 8px;
+    border: none;
+    border-bottom: 2px solid {COLORS['text_secondary']};
+    border-radius: 4px; /* Топовые углы скруглены, внизу линия */
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    font-size: 14px;
+    padding: 6px 8px;
     min-width: 65px;
 }}
+QSpinBox:focus {{
+    border-bottom: 2px solid {COLORS['accent']};
+    background-color: {COLORS['border']};
+}}
 QSpinBox::up-button, QSpinBox::down-button {{
-    background: {COLORS['bg_card']};
-    border: none;
-    width: 18px;
-}}
-QSpinBox::up-button:hover, QSpinBox::down-button:hover {{
-    background: {COLORS['accent_glow']};
-}}
-QSpinBox::up-arrow {{
-    image: none;
-    width: 0; height: 0;
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    border-bottom: 6px solid {COLORS['text_secondary']};
-}}
-QSpinBox::down-arrow {{
-    image: none;
-    width: 0; height: 0;
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    border-top: 6px solid {COLORS['text_secondary']};
+    width: 0px; /* Прячем стрелки для минимализма */
 }}
 
 /* ── Разделитель ── */
@@ -213,13 +174,13 @@ QMenu {{
     background-color: {COLORS['bg_card']};
     color: {COLORS['text_primary']};
     border: 1px solid {COLORS['border']};
-    border-radius: 8px;
-    padding: 4px;
+    border-radius: 12px;
+    padding: 8px;
     font-size: 13px;
 }}
 QMenu::item:selected {{
-    background-color: {COLORS['accent_glow']};
-    border-radius: 4px;
+    background-color: {COLORS['bg_widget']};
+    border-radius: 8px;
 }}
 """
 
@@ -321,7 +282,6 @@ class MainWindow(QMainWindow):
     def _setup_window(self):
         """Настраивает параметры главного окна."""
         self.setWindowTitle("SimplyPaste")
-        self.setFixedSize(420, 560)
         self.setWindowFlags(Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
 
         icon_path = self._get_icon_path()
@@ -341,11 +301,13 @@ class MainWindow(QMainWindow):
         """Строит всё дерево виджетов."""
         central = QWidget()
         central.setObjectName("centralWidget")
+        central.setFixedWidth(320)
         self.setCentralWidget(central)
 
         root_layout = QVBoxLayout(central)
         root_layout.setContentsMargins(20, 20, 20, 20)
         root_layout.setSpacing(16)
+        root_layout.setSizeConstraint(QVBoxLayout.SetFixedSize)
 
         # ── Заголовок ──
         root_layout.addWidget(self._build_header())
@@ -356,13 +318,8 @@ class MainWindow(QMainWindow):
         # ── Задержка ──
         root_layout.addWidget(self._build_delay_card())
 
-        # ── Статус / Toggle ──
+        # ── Toggle ──
         root_layout.addWidget(self._build_toggle_card())
-
-        # ── Строка состояния ──
-        root_layout.addWidget(self._build_status_bar())
-
-        root_layout.addStretch()
 
     def _build_header(self) -> QWidget:
         """Шапка с логотипом и названием."""
@@ -370,26 +327,14 @@ class MainWindow(QMainWindow):
         layout = QHBoxLayout(widget)
         layout.setContentsMargins(0, 0, 0, 0)
 
-        # Иконка-заглушка
-        ico_lb = QLabel("📋")
-        ico_lb.setFont(QFont("Segoe UI Emoji", 26))
-        ico_lb.setFixedSize(48, 48)
-
         title_col = QVBoxLayout()
         title = QLabel("SimplyPaste")
         title.setFont(QFont("Segoe UI", 20, QFont.Bold))
         title.setStyleSheet(f"color: {COLORS['text_primary']};")
 
-        subtitle = QLabel("Clipboard key-by-key typing tool")
-        subtitle.setFont(QFont("Segoe UI", 9))
-        subtitle.setStyleSheet(f"color: {COLORS['text_secondary']};")
-
         title_col.addWidget(title)
-        title_col.addWidget(subtitle)
         title_col.setSpacing(2)
 
-        layout.addWidget(ico_lb)
-        layout.addSpacing(10)
         layout.addLayout(title_col)
         layout.addStretch()
         return widget
@@ -409,7 +354,7 @@ class MainWindow(QMainWindow):
         self._hotkey_display.setObjectName("hotkeyDisplay")
         self._hotkey_display.setMinimumWidth(130)
 
-        self._record_btn = QPushButton("⏺  Record")
+        self._record_btn = QPushButton("Record")
         self._record_btn.setObjectName("recordBtn")
         self._record_btn.setProperty("recording", False)
         self._record_btn.clicked.connect(self._on_record_clicked)
@@ -419,11 +364,6 @@ class MainWindow(QMainWindow):
         row.addWidget(self._record_btn)
         layout.addLayout(row)
 
-        hint = QLabel("Click Record, then press any key or combination")
-        hint.setFont(QFont("Segoe UI", 8))
-        hint.setStyleSheet(f"color: {COLORS['text_secondary']};")
-        hint.setWordWrap(True)
-        layout.addWidget(hint)
         return card
 
     def _build_delay_card(self) -> QFrame:
@@ -488,15 +428,6 @@ class MainWindow(QMainWindow):
         layout.addWidget(self._toggle_btn)
         self._update_toggle_btn(self._config.get("enabled", True))
         return card
-
-    def _build_status_bar(self) -> QLabel:
-        """Строка состояния внизу окна."""
-        self._status_label = QLabel("Готов к работе")
-        self._status_label.setObjectName("statusLabel")
-        self._status_label.setAlignment(Qt.AlignCenter)
-        self._status_label.setFont(QFont("Segoe UI", 10))
-        self._set_status("idle")
-        return self._status_label
 
     # ── Системный трей ─────────────────────────────────────────────────────
 
@@ -564,7 +495,7 @@ class MainWindow(QMainWindow):
         self._listener.disable()
 
         # Меняем кнопку на «ожидание»
-        self._record_btn.setText("⏳  Press a key…")
+        self._record_btn.setText("Press a key…")
         self._record_btn.setProperty("recording", True)
         self._record_btn.style().unpolish(self._record_btn)
         self._record_btn.style().polish(self._record_btn)
@@ -573,16 +504,17 @@ class MainWindow(QMainWindow):
 
     def _on_hotkey_recorded(self, hotkey: str):
         """Callback — клавиша записана. Вызывается из фонового потока."""
-        self._config["hotkey"] = hotkey
-        save_config(self._config)
         # Передаём значение в главный поток Qt через signal (QueuedConnection)
         self._hotkey_bridge.hotkey_recorded.emit(hotkey)
 
     def _apply_hotkey_to_ui(self, hotkey: str):
         """Обновляет UI и регистрирует новую горячую клавишу."""
+        self._config["hotkey"] = hotkey
+        save_config(self._config)
+
         self._hotkey_display.setText(hotkey)
 
-        self._record_btn.setText("⏺  Record")
+        self._record_btn.setText("Record")
         self._record_btn.setProperty("recording", False)
         self._record_btn.style().unpolish(self._record_btn)
         self._record_btn.style().polish(self._record_btn)
@@ -627,9 +559,9 @@ class MainWindow(QMainWindow):
         # Читаем буфер сразу (QApplication.clipboard() — только из главного потока)
         text = get_clipboard_text()
         if not text:
-            self._set_status("empty")
-            QTimer.singleShot(2000, lambda: self._set_status("idle"))
             return
+            
+        self._is_typing = True  # Блокируем повторные нажатия на время pre_delay
 
         pre_delay = self._config.get("pre_delay_ms", 500)
         # Запускаем ввод через pre_delay мс, чтобы пользователь успел переключиться
@@ -637,9 +569,6 @@ class MainWindow(QMainWindow):
 
     def _start_typing(self, text: str):
         """Запускает рабочий поток с посимвольным вводом."""
-        if self._is_typing:
-            return
-
         delay_ms = self._config.get("delay_ms", 50)
 
         self._worker = PasteWorker(text, delay_ms)
@@ -651,18 +580,13 @@ class MainWindow(QMainWindow):
     # ── Обратная связь во время ввода ─────────────────────────────────────
 
     def _on_typing_started(self):
-        self._is_typing = True
-        self._set_status("typing")
+        pass  # Флаг self._is_typing уже установлен в _on_hotkey_triggered
 
     def _on_typing_finished(self):
         self._is_typing = False
-        self._set_status("done")
-        QTimer.singleShot(2000, lambda: self._set_status("idle"))
 
     def _on_clipboard_empty(self):
         self._is_typing = False
-        self._set_status("empty")
-        QTimer.singleShot(2000, lambda: self._set_status("idle"))
 
     # ── Вспомогательные методы ─────────────────────────────────────────────
 
@@ -686,18 +610,6 @@ class MainWindow(QMainWindow):
         """Обновляет пункт меню трея в зависимости от состояния."""
         enabled = self._config.get("enabled", True)
         self._act_toggle.setText("Disable" if enabled else "Enable")
-
-    def _set_status(self, state: str):
-        """Обновляет строку состояния."""
-        states = {
-            "idle":   ("Ready", f"color: {COLORS['text_secondary']}; background: transparent;"),
-            "typing": ("⌨️  Typing…", f"color: #FFF; background-color: {COLORS['accent']}; border-radius: 5px;"),
-            "done":   ("✅  Done!", f"color: #FFF; background-color: {COLORS['success']}; border-radius: 5px;"),
-            "empty":  ("⚠️  Clipboard is empty", f"color: #000; background-color: {COLORS['warning']}; border-radius: 5px;"),
-        }
-        text, style = states.get(state, states["idle"])
-        self._status_label.setText(text)
-        self._status_label.setStyleSheet(f"QLabel {{ {style} }}")
 
     # ── Управление окном ───────────────────────────────────────────────────
 
