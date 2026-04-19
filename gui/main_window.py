@@ -292,7 +292,10 @@ class MainWindow(QMainWindow):
 
     def _get_icon_path(self) -> str:
         """Возвращает путь к файлу иконки."""
-        base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        if getattr(sys, "frozen", False):
+            base = sys._MEIPASS
+        else:
+            base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         return os.path.join(base, "assets", "icon.png")
 
     # ── Построение интерфейса ──────────────────────────────────────────────
