@@ -380,7 +380,7 @@ class MainWindow(QMainWindow):
         title.setFont(QFont("Segoe UI", 20, QFont.Bold))
         title.setStyleSheet(f"color: {COLORS['text_primary']};")
 
-        subtitle = QLabel("Симулятор ввода из буфера обмена")
+        subtitle = QLabel("Clipboard key-by-key typing tool")
         subtitle.setFont(QFont("Segoe UI", 9))
         subtitle.setStyleSheet(f"color: {COLORS['text_secondary']};")
 
@@ -401,7 +401,7 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(16, 14, 16, 14)
         layout.setSpacing(10)
 
-        layout.addWidget(_section_label("горячая клавиша"))
+        layout.addWidget(_section_label("hotkey"))
 
         # Поле с текущей клавишей + кнопка «Записать»
         row = QHBoxLayout()
@@ -409,7 +409,7 @@ class MainWindow(QMainWindow):
         self._hotkey_display.setObjectName("hotkeyDisplay")
         self._hotkey_display.setMinimumWidth(130)
 
-        self._record_btn = QPushButton("⏺  Записать клавишу")
+        self._record_btn = QPushButton("⏺  Record")
         self._record_btn.setObjectName("recordBtn")
         self._record_btn.setProperty("recording", False)
         self._record_btn.clicked.connect(self._on_record_clicked)
@@ -419,7 +419,7 @@ class MainWindow(QMainWindow):
         row.addWidget(self._record_btn)
         layout.addLayout(row)
 
-        hint = QLabel("Нажмите «Записать», затем нажмите нужную клавишу или комбинацию")
+        hint = QLabel("Click Record, then press any key or combination")
         hint.setFont(QFont("Segoe UI", 8))
         hint.setStyleSheet(f"color: {COLORS['text_secondary']};")
         hint.setWordWrap(True)
@@ -427,65 +427,40 @@ class MainWindow(QMainWindow):
         return card
 
     def _build_delay_card(self) -> QFrame:
-        """Карточка настройки задержки между символами."""
+        """Карточка настройки задержки."""
         card = _make_card()
         layout = QVBoxLayout(card)
         layout.setContentsMargins(16, 14, 16, 14)
         layout.setSpacing(10)
 
-        layout.addWidget(_section_label("задержка между символами (мс)"))
-
-        # Ползунок + числовое поле
-        row = QHBoxLayout()
-        self._delay_slider = QSlider(Qt.Horizontal)
-        self._delay_slider.setRange(0, 500)
-        self._delay_slider.setValue(self._config.get("delay_ms", 50))
-        self._delay_slider.setTickInterval(50)
-        self._delay_slider.setCursor(QCursor(Qt.PointingHandCursor))
-
+        # Задержка между символами
+        row1 = QHBoxLayout()
+        lbl1 = QLabel("Char delay:")
+        lbl1.setFont(QFont("Segoe UI", 10))
         self._delay_spin = QSpinBox()
         self._delay_spin.setRange(0, 500)
         self._delay_spin.setValue(self._config.get("delay_ms", 50))
-        self._delay_spin.setSuffix(" мс")
-
-        # Синхронизация ползунка и числового поля
-        self._delay_slider.valueChanged.connect(self._delay_spin.setValue)
-        self._delay_spin.valueChanged.connect(self._delay_slider.setValue)
-        self._delay_slider.valueChanged.connect(self._on_delay_changed)
-
-        row.addWidget(self._delay_slider, stretch=1)
-        row.addSpacing(8)
-        row.addWidget(self._delay_spin)
-        layout.addLayout(row)
-
-        # Подписи шкалы
-        scale = QHBoxLayout()
-        for val in ["0", "100", "200", "300", "400", "500"]:
-            lbl = QLabel(val)
-            lbl.setFont(QFont("Segoe UI", 7))
-            lbl.setStyleSheet(f"color: {COLORS['text_secondary']};")
-            lbl.setAlignment(Qt.AlignCenter)
-            scale.addWidget(lbl)
-        layout.addLayout(scale)
+        self._delay_spin.setSuffix(" ms")
+        self._delay_spin.valueChanged.connect(self._on_delay_changed)
+        row1.addWidget(lbl1)
+        row1.addStretch()
+        row1.addWidget(self._delay_spin)
+        layout.addLayout(row1)
 
         # Пауза перед вводом
-        pre_row = QHBoxLayout()
-        pre_lbl = QLabel("Пауза перед вводом:")
+        row2 = QHBoxLayout()
+        pre_lbl = QLabel("Pre-delay:")
         pre_lbl.setFont(QFont("Segoe UI", 10))
         self._pre_delay_spin = QSpinBox()
         self._pre_delay_spin.setRange(100, 5000)
         self._pre_delay_spin.setValue(self._config.get("pre_delay_ms", 500))
-        self._pre_delay_spin.setSuffix(" мс")
-        self._pre_delay_spin.setToolTip(
-            "Время ожидания после нажатия горячей клавиши,\n"
-            "чтобы успеть переключиться в нужное окно"
-        )
+        self._pre_delay_spin.setSuffix(" ms")
+        self._pre_delay_spin.setToolTip("Wait time before typing starts (lets you switch windows)")
         self._pre_delay_spin.valueChanged.connect(self._on_pre_delay_changed)
-
-        pre_row.addWidget(pre_lbl)
-        pre_row.addStretch()
-        pre_row.addWidget(self._pre_delay_spin)
-        layout.addLayout(pre_row)
+        row2.addWidget(pre_lbl)
+        row2.addStretch()
+        row2.addWidget(self._pre_delay_spin)
+        layout.addLayout(row2)
         return card
 
     def _build_toggle_card(self) -> QFrame:
@@ -495,7 +470,7 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(16, 14, 16, 14)
         layout.setSpacing(12)
 
-        layout.addWidget(_section_label("управление"))
+        layout.addWidget(_section_label("control"))
 
         self._toggle_btn = QPushButton()
         self._toggle_btn.setObjectName("toggleBtn")
@@ -541,13 +516,13 @@ class MainWindow(QMainWindow):
         tray_menu = QMenu()
         tray_menu.setStyleSheet(STYLESHEET)
 
-        act_show = QAction("Показать окно", self)
+        act_show = QAction("Show", self)
         act_show.triggered.connect(self._show_window)
 
-        self._act_toggle = QAction("Выключить", self)
+        self._act_toggle = QAction("Disable", self)
         self._act_toggle.triggered.connect(self._on_toggle_clicked)
 
-        act_quit = QAction("Выход", self)
+        act_quit = QAction("Quit", self)
         act_quit.triggered.connect(self._quit_app)
 
         tray_menu.addAction(act_show)
@@ -566,7 +541,6 @@ class MainWindow(QMainWindow):
     def _apply_config(self):
         """Применяет загруженные настройки к виджетам."""
         self._hotkey_display.setText(self._config.get("hotkey", "F9"))
-        self._delay_slider.setValue(self._config.get("delay_ms", 50))
         self._delay_spin.setValue(self._config.get("delay_ms", 50))
         self._pre_delay_spin.setValue(self._config.get("pre_delay_ms", 500))
         self._update_toggle_btn(self._config.get("enabled", True))
@@ -590,7 +564,7 @@ class MainWindow(QMainWindow):
         self._listener.disable()
 
         # Меняем кнопку на «ожидание»
-        self._record_btn.setText("⏳  Нажмите клавишу…")
+        self._record_btn.setText("⏳  Press a key…")
         self._record_btn.setProperty("recording", True)
         self._record_btn.style().unpolish(self._record_btn)
         self._record_btn.style().polish(self._record_btn)
@@ -608,7 +582,7 @@ class MainWindow(QMainWindow):
         """Обновляет UI и регистрирует новую горячую клавишу."""
         self._hotkey_display.setText(hotkey)
 
-        self._record_btn.setText("⏺  Записать клавишу")
+        self._record_btn.setText("⏺  Record")
         self._record_btn.setProperty("recording", False)
         self._record_btn.style().unpolish(self._record_btn)
         self._record_btn.style().polish(self._record_btn)
@@ -695,9 +669,9 @@ class MainWindow(QMainWindow):
     def _update_toggle_btn(self, enabled: bool):
         """Обновляет текст и стиль кнопки вкл/откл."""
         if enabled:
-            self._toggle_btn.setText("✅  Утилита включена  —  нажмите для отключения")
+            self._toggle_btn.setText("Enabled")
         else:
-            self._toggle_btn.setText("❌  Утилита выключена  —  нажмите для включения")
+            self._toggle_btn.setText("Disabled")
 
         self._toggle_btn.setProperty("enabled_state", str(enabled).lower())
         self._toggle_btn.style().unpolish(self._toggle_btn)
@@ -711,15 +685,15 @@ class MainWindow(QMainWindow):
     def _update_tray_menu(self):
         """Обновляет пункт меню трея в зависимости от состояния."""
         enabled = self._config.get("enabled", True)
-        self._act_toggle.setText("Выключить" if enabled else "Включить")
+        self._act_toggle.setText("Disable" if enabled else "Enable")
 
     def _set_status(self, state: str):
         """Обновляет строку состояния."""
         states = {
-            "idle":   ("Готов к работе", f"color: {COLORS['text_secondary']}; background: transparent;"),
-            "typing": ("⌨️  Идёт ввод текста…", f"color: #FFF; background-color: {COLORS['accent']}; border-radius: 5px;"),
-            "done":   ("✅  Текст введён успешно!", f"color: #FFF; background-color: {COLORS['success']}; border-radius: 5px;"),
-            "empty":  ("⚠️  Буфер обмена пуст", f"color: #000; background-color: {COLORS['warning']}; border-radius: 5px;"),
+            "idle":   ("Ready", f"color: {COLORS['text_secondary']}; background: transparent;"),
+            "typing": ("⌨️  Typing…", f"color: #FFF; background-color: {COLORS['accent']}; border-radius: 5px;"),
+            "done":   ("✅  Done!", f"color: #FFF; background-color: {COLORS['success']}; border-radius: 5px;"),
+            "empty":  ("⚠️  Clipboard is empty", f"color: #000; background-color: {COLORS['warning']}; border-radius: 5px;"),
         }
         text, style = states.get(state, states["idle"])
         self._status_label.setText(text)
@@ -744,8 +718,7 @@ class MainWindow(QMainWindow):
         self.hide()
         self._tray.showMessage(
             "SimplyPaste",
-            "Приложение продолжает работать в фоне.\n"
-            "Нажмите дважды на иконку в трее, чтобы вернуться.",
+            "Running in background.\nDouble-click the tray icon to restore.",
             QSystemTrayIcon.Information,
             2000
         )
